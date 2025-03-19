@@ -13,10 +13,12 @@ DBT_ENV_VARS="$DBT_BASE/env_vars/$1.env"
 DBT_VENV="$DBT_BASE/envs/$1"
 DBT_PROJECT="$DBT_BASE/dbt_project"  # Change this if needed
 
-# Check if the environment variable file exists
-if [ ! -f "$DBT_ENV_VARS" ]; then
-    echo "Error: Environment file '$DBT_ENV_VARS' not found!"
-    return 1
+# Load environment variables only if the file exists
+if [ -f "$DBT_ENV_VARS" ]; then
+    export $(grep -v '^#' "$DBT_ENV_VARS" | xargs)
+    echo "Loaded environment variables from $DBT_ENV_VARS"
+else
+    echo "No environment variables file found. Proceeding without loading env vars."
 fi
 
 # Check if the virtual environment exists
