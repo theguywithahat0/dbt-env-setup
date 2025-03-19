@@ -1,0 +1,29 @@
+# Sample aliases and functions for environment setup.
+# Copy this file to ~/.bash_aliases (or merge with your existing one)
+# and then run: source ~/.bash_aliases
+
+# Alias to run the project setup script.
+alias project_setup='source ~/env-setup/scripts/project_setup.sh'
+
+# Alias to activate the default virtual environment (backup environment).
+alias env_default='source ~/env-setup/envs/env/bin/activate'
+
+# Set the profiles directory for the project (if applicable).
+export PROFILES_DIR=~/env-setup/.profiles
+
+# Function to load environment variables for different project environments.
+# Usage: load_env <environment_name>
+# Example: load_env dev
+load_env() {
+    ENV_FILE=~/env-setup/env_vars/${1}.env
+    if [ -z "$1" ]; then
+        echo "Usage: load_env <environment_name>"
+        return 1
+    fi
+    if [ ! -f "$ENV_FILE" ]; then
+        echo "Warning: Environment file '$ENV_FILE' not found; proceeding without loading env vars."
+        return 0
+    fi
+    export $(grep -v '^#' "$ENV_FILE" | xargs)
+    echo "Loaded environment for '$1'."
+}
