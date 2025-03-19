@@ -1,0 +1,10 @@
+# Ignore virtual environments
+envs/*
+
+# Allow the placeholder file so the folder exists
+!envs/.gitignore
+
+# Ignore Python cache files
+__pycache__/
+*.pyc
+*.pyo
