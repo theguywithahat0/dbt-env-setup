@@ -13,7 +13,7 @@ This repository provides a simple way to set up multiple dbt environments with s
 ### 1️⃣ Clone the Repository
 ```sh
 git clone https://github.com/YOUR_GITHUB_USERNAME/dbt-env-setup.git
-cd dbt-env-setup
+cd dbt-env-setup```
 
 ### 2️⃣ Create Virtual Environments
 
