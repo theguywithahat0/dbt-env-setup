@@ -24,16 +24,8 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BASE_DIR="$(dirname "$SCRIPT_DIR")"
 ENV_VARS_FILE="$BASE_DIR/env_vars/$ENV_NAME.env"
 VENV_DIR="$BASE_DIR/envs/$ENV_NAME"
-DBT_PROJECT_DIR="$BASE_DIR/dbt_project"  # Change this if needed
 
-# Check if virtual environment exists
-if [ ! -d "$VENV_DIR" ]; then
-    echo "Error: Virtual environment '$VENV_DIR' not found!"
-    echo "Please create it using: python3 -m venv $VENV_DIR"
-    return 1
-fi
-
-# Load environment variables if file exists
+# Load environment variables first so we can use them to determine project path
 if [ -f "$ENV_VARS_FILE" ]; then
     set -a  # Automatically export all variables
     source "$ENV_VARS_FILE"
@@ -42,6 +34,26 @@ if [ -f "$ENV_VARS_FILE" ]; then
 else
     echo "⚠️  Warning: Environment file '$ENV_VARS_FILE' not found; proceeding without loading env vars."
 fi
+
+# Determine DBT project directory based on environment
+# If DBT_PROJECT_PATH is defined in the environment file, use it
+# Otherwise fall back to default
+if [ -n "$DBT_PROJECT_PATH" ]; then
+    DBT_PROJECT_DIR="$DBT_PROJECT_PATH"
+    echo "👉 Using project path from environment: $DBT_PROJECT_DIR"
+else
+    DBT_PROJECT_DIR="$BASE_DIR/dbt_project"
+    echo "👉 Using default project path: $DBT_PROJECT_DIR"
+fi
+
+# Check if virtual environment exists
+if [ ! -d "$VENV_DIR" ]; then
+    echo "Error: Virtual environment '$VENV_DIR' not found!"
+    echo "Please create it using: python3 -m venv $VENV_DIR"
+    return 1
+fi
+
+# Environment variables already loaded above
 
 # Activate the virtual environment
 source "$VENV_DIR/bin/activate"
