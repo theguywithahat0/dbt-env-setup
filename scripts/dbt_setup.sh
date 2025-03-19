@@ -64,8 +64,10 @@ if [ -d "$DBT_PROJECT_DIR" ]; then
     cd "$DBT_PROJECT_DIR"
     echo "✅ Changed directory to: $DBT_PROJECT_DIR"
 else
-    echo "⚠️  Warning: DBT project directory '$DBT_PROJECT_DIR' not found."
-    echo "    Remaining in current directory: $(pwd)"
+    echo "⚠️  Warning: DBT project directory '$DBT_PROJECT_DIR' does not exist."
+    echo "    Environment variables are loaded and virtual environment is activated,"
+    echo "    but you'll need to manually navigate to your project directory."
+    echo "    Current directory: $(pwd)"
 fi
 
 echo "🚀 Your $ENV_NAME environment is ready!"
