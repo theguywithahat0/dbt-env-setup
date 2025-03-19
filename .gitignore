@@ -1,10 +1,35 @@
 # Ignore virtual environments
 envs/*
 
-# Allow the placeholder file so the folder exists
-!envs/.gitignore
+# Keep the directory structure with .gitkeep
+!envs/.gitkeep
 
 # Ignore Python cache files
 __pycache__/
 *.pyc
 *.pyo
+*.pyd
+.Python
+*.so
+.pytest_cache/
+
+# Ignore IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Ignore logs
+*.log
+logs/
+
+# Ignore local environment files (optional, use with caution)
+# Uncomment to stop tracking environment variable files
+# env_vars/*.env
+
+# DBT specific ignores
+target/
+dbt_modules/
+dbt_packages/
+logs/
