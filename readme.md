@@ -15,7 +15,7 @@ This repository provides a lightweight solution for data engineers working with 
 
 ```bash
 # Clone the repository
-git clone https://github.com/YOUR_USERNAME/env-setup.git
+git clone https://github.com/theguywithahat0/dbt-env-setup.git
 cd env-setup
 
 # Create your virtual environments
