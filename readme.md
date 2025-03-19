@@ -96,13 +96,27 @@ Example environment variable files are included:
 ```
 DBT_ENV=dev
 SAMPLE_VAR_1=1
+# Path to the DBT project directory for development
+DBT_PROJECT_PATH=/path/to/dbt_repos/development_branch
 ```
 
 **prod.env**
 ```
 DBT_ENV=prod
 SAMPLE_VAR_1=2
+# Path to the DBT project directory for production
+DBT_PROJECT_PATH=/path/to/dbt_repos/main_branch
 ```
+
+### Environment-Specific Project Paths
+
+A key feature is the ability to define different DBT project paths for each environment using the `DBT_PROJECT_PATH` variable. This allows you to:
+
+- Point development environments to feature branches
+- Point production environments to main/master branches
+- Use completely separate repositories for different environments
+
+If `DBT_PROJECT_PATH` is not defined, the script will default to `<base_dir>/dbt_project`.
 
 You can create additional environment files as needed (e.g., `staging.env`, `testing.env`).
 
