@@ -1,9 +1,12 @@
 # Enhanced shell configuration for environment setup
 # Copy this file to ~/.bash_aliases and run: source ~/.bash_aliases
+#
+# IMPORTANT: Update the ENV_SETUP_DIR variable below to point to your actual
+# repository location before sourcing this file!
 
-# Get the actual path to the environment setup directory
-# This helps avoid hardcoded paths that may differ between installations
-ENV_SETUP_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+# Set path to the environment setup directory
+# You'll need to modify this path to match your actual installation location
+ENV_SETUP_DIR="$HOME/dbt-env-setup"  # Change this to match your installation path
 
 # Alias to run the project setup script (which is dbt_setup.sh)
 # Usage: project_setup dev
