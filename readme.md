@@ -1,158 +1,194 @@
-```md
-# Environment Setup
+# DBT Environment Setup
 
-This repository provides a simple and neutral solution for managing multiple project environments. It offers:
+A streamlined toolkit for managing DBT project environments with isolated dependencies and environment-specific configurations.
 
-- **Separate environment variable files** for different environments (e.g., `dev` and `prod`).
-- **Virtual environment folder structure** (with a default placeholder) so that users can create and use their own virtual environments.
-- A **setup script** to load environment variables and (optionally) activate the correct virtual environment.
-- An **install script** to install core dependencies (e.g., dbt-core) in the active environment.
-- A **sample shell configuration file** (`.bash_aliases.sample`) with aliases and functions to ease your workflow.
+## 📋 Overview
 
-> **Note:** Environment variables are optional. The setup script will load them if they exist and otherwise continue without error.
+This repository provides a lightweight solution for data engineers working with DBT projects across different environments (development, production, etc.) with:
 
----
+- Environment-specific variable files
+- Isolated Python virtual environments 
+- Helper scripts for quick environment switching
+- Simple installation of dbt-core and dependencies
 
-## Repository Structure
+## 🚀 Quick Start
 
-```
-environment-setup/
-├── env_vars/             
-│   ├── dev.env           # Environment variables for development
-│   ├── prod.env          # Environment variables for production
-├── envs/                 
-│   ├── .gitkeep          # Placeholder file to maintain folder structure (venv contents are ignored)
-├── scripts/              
-│   ├── project_setup.sh  # Script to load environment variables and set up your environment
-├── install_dbt.sh        # Script to install dbt-core (and its dependencies) in the active environment
-├── .bash_aliases.sample  # Sample aliases and functions for your shell configuration
-├── .gitignore            # Git ignore rules
-└── README.md             # This file
-```
+```bash
+# Clone the repository
+git clone https://github.com/YOUR_USERNAME/env-setup.git
+cd env-setup
 
----
-
-## Getting Started
-
-### 1. Clone the Repository
-
-```sh
-git clone https://github.com/YOUR_GITHUB_USERNAME/environment-setup.git
-cd environment-setup
-```
-
-### 2. Create Virtual Environments
-
-Even though the `envs/` folder is provided, it is empty. Create your virtual environments as needed. For example, to create a default and two named environments:
-
-```sh
-# Create a default environment (for backup)
-python3 -m venv envs/env
-
-# Create a development environment
+# Create your virtual environments
 python3 -m venv envs/dev
-
-# Create a production environment
 python3 -m venv envs/prod
-```
 
-### 3. Set Up an Environment
+# Set up development environment
+source scripts/dbt_setup.sh dev
 
-Use the provided setup script to load environment variables and prepare your shell. The script is located at `scripts/project_setup.sh`.
-
-For example, to set up the **development** environment:
-
-```sh
-source scripts/project_setup.sh dev
-```
-
-Or for the **production** environment:
-
-```sh
-source scripts/project_setup.sh prod
-```
-
-> The script will:
->
-> - Look for environment variable files in `env_vars/` (e.g., `dev.env` or `prod.env`).  
-> - Load them if they exist (if not, it will continue without error).  
-> - (Optionally) Activate the corresponding virtual environment if you customize the script to do so.
-
-### 4. Install Core Dependencies (Optional)
-
-After setting up your environment and activating your virtual environment, you can install the core dependency using the install script:
-
-```sh
+# Install dependencies (with virtual environment active)
 bash install_dbt.sh
 ```
 
-This script installs `dbt-core` (and its dependencies) in your active virtual environment.
+## 📂 Repository Structure
 
----
+```
+env-setup/
+├── env_vars/             # Environment variable files
+│   ├── dev.env           # Development variables
+│   └── prod.env          # Production variables
+├── envs/                 # Virtual environments (gitignored)
+│   └── .gitkeep          # Placeholder to maintain folder structure
+├── scripts/
+│   └── dbt_setup.sh      # Main environment setup script
+├── install_dbt.sh        # Script to install dbt-core
+├── .bash_aliases.sample  # Shell configuration examples
+├── .gitignore            # Git ignore rules
+└── README.md             # This documentation
+```
 
-## Optional: Shell Aliases and Functions
+## 💻 Environment Setup
 
-A sample shell configuration file, `.bash_aliases.sample`, is provided in this repository. It includes:
+### Creating Virtual Environments
 
-- An alias to run the project setup script easily.
-- An alias to activate a default virtual environment.
-- A function (`load_env`) that loads environment variables from a file if it exists.
+Create customized Python environments for each context:
 
-### To Use the Sample File
+```bash
+# Create a default environment
+python3 -m venv envs/env
 
-1. Copy (or merge) the sample file into your home directory:
+# Create development/production environments
+python3 -m venv envs/dev
+python3 -m venv envs/prod
+```
 
-   ```sh
-   cp .bash_aliases.sample ~/.bash_aliases
-   ```
+### Loading an Environment
 
-2. Reload your shell configuration:
+Use the provided setup script to load variables and activate your environment:
 
-   ```sh
-   source ~/.bash_aliases
-   ```
+```bash
+# Development setup
+source scripts/dbt_setup.sh dev
 
-Now you can use commands such as:
+# Production setup
+source scripts/dbt_setup.sh prod
+```
 
-- `project_setup dev` – to run the setup script for the development environment.
-- `env_default` – to activate the default virtual environment.
-- `load_env dev` – to manually load the environment variables for development (if needed).
+The script will:
+- Load environment variables from `env_vars/<environment>.env`
+- Activate the corresponding virtual environment
+- Navigate to your DBT project directory (configurable in the script)
 
----
+### Installing Dependencies
 
-## Environment Variable Files
+After activating your environment:
 
-The repository includes two example environment variable files:
+```bash
+bash install_dbt.sh
+```
 
-### `env_vars/dev.env`
+This will install `dbt-core` in your active virtual environment.
 
-```ini
+## ⚙️ Environment Variables
+
+Example environment variable files are included:
+
+**dev.env**
+```
 DBT_ENV=dev
 SAMPLE_VAR_1=1
 ```
 
-### `env_vars/prod.env`
-
-```ini
+**prod.env**
+```
 DBT_ENV=prod
 SAMPLE_VAR_1=2
 ```
 
-Feel free to modify these files to suit your project's needs. Remember that these files are optional—if they don't exist, the setup script will notify you and continue.
+You can create additional environment files as needed (e.g., `staging.env`, `testing.env`).
 
----
+## 🔧 Shell Configuration
 
-## Additional Notes
+For easier workflow, you can use the provided shell aliases:
 
-- **Customization:** You can customize the paths and commands in the setup script (`scripts/project_setup.sh`) to suit your specific project layout.
-- **Virtual Environments:** The `envs/` folder is tracked only as an empty folder (via the `.gitkeep` file). Actual virtual environment files are not tracked.
-- **Profiles:** If your project uses additional configuration (e.g., a profiles file), set the appropriate environment variable (for example, `export PROFILES_DIR=~/environment-setup/.profiles`) in your shell or within your setup script.
+1. Copy the sample file:
+   ```bash
+   cp .bash_aliases.sample ~/.bash_aliases
+   ```
 
----
+2. Source it:
+   ```bash
+   source ~/.bash_aliases
+   ```
 
-## Summary
+3. Use the included helpers:
+   ```bash
+   # Load development environment (runs dbt_setup.sh)
+   project_setup dev
+   
+   # Activate default environment
+   env_default
+   
+   # Manually load environment variables
+   load_env dev
+   
+   # Create a new environment
+   create_env staging 3.9  # Optional Python version specification
+   ```
 
-This repository is designed to be a neutral, portable starting point for managing multiple environments with separate environment variables and virtual environments. Whether you're setting up a development or production environment, the provided scripts and sample files are here to help streamline your workflow.
+## 🛠️ Customization
 
-Happy setting up!
+### Modifying the DBT Setup Script
+
+The main `dbt_setup.sh` script can be customized to suit your project:
+
+1. Open `scripts/dbt_setup.sh` in your editor
+2. Update the `DBT_PROJECT` path to match your DBT project location
+3. Add any additional setup steps needed for your workflow
+
+### Adding New Dependencies
+
+To add more dependencies beyond dbt-core:
+
+1. Edit `install_dbt.sh` to include additional packages:
+   ```bash
+   #!/bin/bash
+   echo "Installing dbt-core and dependencies..."
+   pip install dbt-core
+   pip install dbt-postgres  # For PostgreSQL adapter
+   pip install pandas        # For data manipulation
+   echo "Installation complete."
+   ```
+
+## 🔍 Troubleshooting
+
+### Common Issues
+
+**Virtual Environment Not Found**
 ```
+Error: Virtual environment '/path/to/envs/dev' not found!
+```
+Solution: Create the environment with `python3 -m venv envs/dev`
+
+**Environment Variables Not Loading**
+Check that your environment file:
+- Exists in the correct location (`env_vars/<environment>.env`)
+- Has no spaces around the equal signs (`KEY=value`, not `KEY = value`)
+- Contains no syntax errors
+
+**Script Must Be Sourced**
+```
+Error: This script must be sourced, not executed.
+```
+Solution: Use `source scripts/dbt_setup.sh dev` instead of `./scripts/dbt_setup.sh dev`
+
+## 📝 Contributing
+
+Feel free to customize this repository for your specific needs. If you make improvements, consider contributing them back via pull request!
+
+## 🔒 Security Note
+
+Remember that environment files may contain sensitive information. They are included in this repository for demonstration purposes, but in practice:
+
+- Never commit real credentials or sensitive data to the repository
+- Consider using a secrets manager for production environments
+- Add appropriate entries to `.gitignore` to prevent accidental commits
