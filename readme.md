@@ -14,3 +14,25 @@ This repository provides a simple way to set up multiple dbt environments with s
 ```sh
 git clone https://github.com/YOUR_GITHUB_USERNAME/dbt-env-setup.git
 cd dbt-env-setup
+
+### 2️⃣ Create Virtual Environments
+
+mkdir -p envs
+python3 -m venv envs/dev
+python3 -m venv envs/prod
+
+### 3️⃣ Set Up an Environment
+
+To activate dev:
+
+source scripts/dbt_setup.sh dev
+
+To activate prod:
+
+source scripts/dbt_setup.sh prod
+
+### 4️⃣ Install dbt (If Needed)
+
+Once your environment is active, run:
+
+bash install_dbt.sh
