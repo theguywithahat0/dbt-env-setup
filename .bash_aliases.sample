@@ -1,29 +1,109 @@
-# Sample aliases and functions for environment setup.
-# Copy this file to ~/.bash_aliases (or merge with your existing one)
-# and then run: source ~/.bash_aliases
+# Enhanced shell configuration for environment setup
+# Copy this file to ~/.bash_aliases and run: source ~/.bash_aliases
 
-# Alias to run the project setup script.
-alias project_setup='source ~/env-setup/scripts/project_setup.sh'
+# Get the actual path to the environment setup directory
+# This helps avoid hardcoded paths that may differ between installations
+ENV_SETUP_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 
-# Alias to activate the default virtual environment (backup environment).
-alias env_default='source ~/env-setup/envs/env/bin/activate'
+# Alias to run the project setup script (which is dbt_setup.sh)
+# Usage: project_setup dev
+project_setup() {
+    local script_path="$ENV_SETUP_DIR/scripts/dbt_setup.sh"
+    
+    if [ -z "$1" ]; then
+        echo "Error: Missing environment name."
+        echo "Usage: project_setup <environment_name>"
+        return 1
+    fi
+    
+    if [ ! -f "$script_path" ]; then
+        echo "Error: Setup script not found at: $script_path"
+        return 1
+    fi
+    
+    source "$script_path" "$1"
+}
 
-# Set the profiles directory for the project (if applicable).
-export PROFILES_DIR=~/env-setup/.profiles
+# Alias to activate the default virtual environment
+env_default() {
+    local env_path="$ENV_SETUP_DIR/envs/env/bin/activate"
+    
+    if [ ! -f "$env_path" ]; then
+        echo "Error: Default environment not found at: $ENV_SETUP_DIR/envs/env/"
+        echo "Create it with: python3 -m venv $ENV_SETUP_DIR/envs/env"
+        return 1
+    fi
+    
+    source "$env_path"
+    echo "Activated default environment."
+}
 
-# Function to load environment variables for different project environments.
+# Set the profiles directory for the project (if applicable)
+# This path will adjust automatically based on where the repo is cloned
+export PROFILES_DIR="$ENV_SETUP_DIR/.profiles"
+
+# Function to load environment variables for different project environments
 # Usage: load_env <environment_name>
 # Example: load_env dev
 load_env() {
-    ENV_FILE=~/env-setup/env_vars/${1}.env
+    local env_file="$ENV_SETUP_DIR/env_vars/${1}.env"
+    
     if [ -z "$1" ]; then
         echo "Usage: load_env <environment_name>"
         return 1
     fi
-    if [ ! -f "$ENV_FILE" ]; then
-        echo "Warning: Environment file '$ENV_FILE' not found; proceeding without loading env vars."
+    
+    if [ ! -f "$env_file" ]; then
+        echo "Warning: Environment file '$env_file' not found; proceeding without loading env vars."
         return 0
     fi
-    export $(grep -v '^#' "$ENV_FILE" | xargs)
+    
+    set -a  # Automatically export all variables
+    source "$env_file"
+    set +a  # Turn off auto-export
+    
     echo "Loaded environment for '$1'."
+}
+
+# Function to create a new environment if it doesn't exist
+# Usage: create_env <environment_name> [python_version]
+# Example: create_env dev 3.9
+create_env() {
+    local env_name="$1"
+    local python_cmd="python3"
+    
+    if [ -z "$env_name" ]; then
+        echo "Usage: create_env <environment_name> [python_version]"
+        return 1
+    fi
+    
+    # Check if specific Python version was requested
+    if [ ! -z "$2" ]; then
+        python_cmd="python$2"
+        if ! command -v "$python_cmd" &> /dev/null; then
+            echo "Error: $python_cmd not found. Make sure it's installed."
+            return 1
+        fi
+    fi
+    
+    local env_path="$ENV_SETUP_DIR/envs/$env_name"
+    
+    # Check if environment already exists
+    if [ -d "$env_path" ]; then
+        echo "Environment '$env_name' already exists at: $env_path"
+        echo "Use 'project_setup $env_name' to activate it."
+        return 0
+    fi
+    
+    # Create the virtual environment
+    echo "Creating virtual environment '$env_name' with $python_cmd..."
+    $python_cmd -m venv "$env_path"
+    
+    if [ $? -eq 0 ]; then
+        echo "✅ Environment created successfully at: $env_path"
+        echo "To activate, run: project_setup $env_name"
+    else
+        echo "❌ Failed to create environment. Check that $python_cmd and venv module are available."
+        return 1
+    fi
 }
