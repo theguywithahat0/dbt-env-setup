@@ -4,6 +4,9 @@ envs/*
 # Keep the directory structure with .gitkeep
 !envs/.gitkeep
 
+# DBT profiles
+.dbt/profiles.yml
+
 # Ignore Python cache files
 __pycache__/
 *.pyc
