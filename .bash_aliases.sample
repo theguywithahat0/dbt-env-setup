@@ -1,5 +1,4 @@
 # Enhanced shell configuration for environment setup
-# Copy this file to ~/.bash_aliases and run: source ~/.bash_aliases
 #
 # IMPORTANT: Update the ENV_SETUP_DIR variable below to point to your actual
 # repository location before sourcing this file!
@@ -27,8 +26,8 @@ project_setup() {
     source "$script_path" "$1"
 }
 
-# Alias to activate the default virtual environment
-env_default() {
+# Alias to activate the default virtual environment (fallback environment)
+env_dbt() {
     local env_path="$ENV_SETUP_DIR/envs/env/bin/activate"
     
     if [ ! -f "$env_path" ]; then
@@ -38,7 +37,7 @@ env_default() {
     fi
     
     source "$env_path"
-    echo "Activated default environment."
+    echo "Activated default fallback environment."
 }
 
 # Set the profiles directory for the project (if applicable)
@@ -70,7 +69,7 @@ load_env() {
 
 # Function to create a new environment if it doesn't exist
 # Usage: create_env <environment_name> [python_version]
-# Example: create_env dev 3.9
+# Example: create_env my_project 3.9
 create_env() {
     local env_name="$1"
     local python_cmd="python3"
