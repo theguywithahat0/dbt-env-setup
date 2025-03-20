@@ -50,6 +50,7 @@ The `envs/` directory structure lets you create separate Python environments:
 The `scripts/dbt_setup.sh` script provides a single command to:
 - Load environment-specific variables
 - Activate the corresponding virtual environment
+- Optionally set DBT_PROFILES_DIR to a custom location (if .dbt directory exists)
 - Navigate to the appropriate project directory (if configured)
 
 ### 4. Environment-Specific Project Paths
@@ -77,6 +78,8 @@ The `.bash_aliases.sample` file provides convenient shortcuts:
 
 ```
 dbt-env-setup/
+├── .dbt/                 # Centralized dbt profiles directory
+│   └── profiles.yml      # Shared profiles configuration
 ├── env_vars/             # Environment variable files
 │   ├── dev.env           # Development variables
 │   └── prod.env          # Production variables
@@ -139,43 +142,19 @@ This walkthrough will guide you through setting up a complete environment for a 
    source ~/.bash_aliases
    ```
 
-5. **Configure your dbt profiles**
+5. **(Optional) Configure custom dbt profiles location**
    ```bash
-   # Create the .dbt directory in the env-setup repository
+   # Create the .dbt directory in the env-setup repository to activate custom profiles
    mkdir -p $ENV_SETUP_DIR/.dbt
    
    # Create or edit the profiles.yml file
    nano $ENV_SETUP_DIR/.dbt/profiles.yml
    ```
    
-   Add your connection details to the profiles.yml file:
-   ```yaml
-   my_dbt_project:
-     target: dev
-     outputs:
-       dev:
-         type: snowflake
-         account: youraccount
-         user: your_dev_user
-         password: your_password
-         role: DEV_ROLE
-         database: DEV_DB
-         warehouse: DEV_WH
-         schema: DEV_SCHEMA
-         threads: 4
-       prod:
-         type: snowflake
-         account: youraccount
-         user: your_prod_user
-         password: your_password
-         role: PROD_ROLE
-         database: PROD_DB
-         warehouse: PROD_WH
-         schema: PROD_SCHEMA
-         threads: 4
-   ```
-   
-   > **Note:** The setup will use this centralized profiles location instead of the default ~/.dbt/profiles.yml
+   > ⚠️ **IMPORTANT WARNING:** Creating the `.dbt` directory in the repository will cause dbt to use 
+   > profiles.yml from this location instead of the default ~/.dbt/profiles.yml. This is optional
+   > but can be useful for keeping project configurations together. If you don't want this behavior,
+   > skip this step and dbt will use the standard ~/.dbt/profiles.yml location.
 
 6. **Clone your actual DBT project**
    ```bash
