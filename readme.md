@@ -25,14 +25,58 @@ python3 -m venv envs/prod
 # Set up development environment
 source scripts/dbt_setup.sh dev
 
-# Install dependencies (with virtual environment active)
+# Install dependencies (while in the repository directory)
 bash install_dbt.sh
 ```
+
+## ✨ Features
+
+### 1. Environment-Specific Variables
+Sample environment variable files are provided in `env_vars/`:
+- `dev.env` - Development configuration sample
+- `prod.env` - Production configuration sample
+- Create additional environment files as needed (e.g., `staging.env`, `my_project.env`)
+
+These files allow you to maintain separate configurations for different contexts.
+
+### 2. Isolated Virtual Environments
+The `envs/` directory structure lets you create separate Python environments:
+- Each environment keeps its dependencies isolated
+- Prevents conflicts between development and production packages
+- Allows different Python versions for different environments
+- Create project-specific environments (e.g., `envs/my_project`)
+
+### 3. Environment Setup Script
+The `scripts/dbt_setup.sh` script provides a single command to:
+- Load environment-specific variables
+- Activate the corresponding virtual environment
+- Navigate to the appropriate project directory (if configured)
+
+### 4. Environment-Specific Project Paths
+Using the `DBT_PROJECT_PATH` variable in each environment file, you can:
+- Point different environments to different repositories or branches
+- Use completely separate project directories for different contexts
+- Organize your work by project and environment
+
+### 5. Default Fallback Environment
+A default environment (`env_default` alias) is provided as a fallback:
+- Quick access to a general-purpose environment
+- Useful for tests or one-off operations
+- No project-specific configuration needed
+
+### 6. Shell Aliases (Optional)
+The `.bash_aliases.sample` file provides convenient shortcuts:
+- `project_setup <env>` - Quick environment activation
+- `env_default` - Activate the default fallback environment
+- `load_env <env>` - Load variables without switching environments
+- `create_env <env> [python_version]` - Create new environments
+
+> ⚠️ **Note:** Using the shell aliases requires updating the `ENV_SETUP_DIR` variable in the `.bash_aliases.sample` file to match your actual installation path. This is an optional but recommended step for frequent users.
 
 ## 📂 Repository Structure
 
 ```
-env-setup/
+dbt-env-setup/
 ├── env_vars/             # Environment variable files
 │   ├── dev.env           # Development variables
 │   └── prod.env          # Production variables
@@ -42,111 +86,144 @@ env-setup/
 │   └── dbt_setup.sh      # Main environment setup script
 ├── install_dbt.sh        # Script to install dbt-core
 ├── .bash_aliases.sample  # Shell configuration examples
+├── LICENSE               # MIT License
 ├── .gitignore            # Git ignore rules
 └── README.md             # This documentation
 ```
 
-## 💻 Environment Setup
+## 🔧 Setting Up Your Custom Workspace: Example Walkthrough
 
-### Creating Virtual Environments
+This walkthrough will guide you through setting up a complete environment for a project called `my_dbt_project`.
 
-Create customized Python environments for each context:
-
-```bash
-# Create a default environment
-python3 -m venv envs/env
-
-# Create development/production environments
-python3 -m venv envs/dev
-python3 -m venv envs/prod
-```
-
-### Loading an Environment
-
-Use the provided setup script to load variables and activate your environment:
-
-```bash
-# Development setup
-source scripts/dbt_setup.sh dev
-
-# Production setup
-source scripts/dbt_setup.sh prod
-```
-
-The script will:
-- Load environment variables from `env_vars/<environment>.env`
-- Activate the corresponding virtual environment
-- Navigate to your DBT project directory (configurable in the script)
-
-### Installing Dependencies
-
-After activating your environment:
-
-```bash
-bash install_dbt.sh
-```
-
-This will install `dbt-core` in your active virtual environment.
-
-## ⚙️ Environment Variables
-
-Example environment variable files are included:
-
-**dev.env**
-```
-DBT_ENV=dev
-SAMPLE_VAR_1=1
-# Path to the DBT project directory for development
-DBT_PROJECT_PATH=/path/to/dbt_repos/development_branch
-```
-
-**prod.env**
-```
-DBT_ENV=prod
-SAMPLE_VAR_1=2
-# Path to the DBT project directory for production
-DBT_PROJECT_PATH=/path/to/dbt_repos/main_branch
-```
-
-### Environment-Specific Project Paths
-
-A key feature is the ability to define different DBT project paths for each environment using the `DBT_PROJECT_PATH` variable. This allows you to:
-
-- Point development environments to feature branches
-- Point production environments to main/master branches
-- Use completely separate repositories for different environments
-
-If `DBT_PROJECT_PATH` is not defined, the script will default to `<base_dir>/dbt_project`.
-
-You can create additional environment files as needed (e.g., `staging.env`, `testing.env`).
-
-## 🔧 Shell Configuration
-
-For easier workflow, you can use the provided shell aliases:
-
-1. Copy the sample file:
+1. **Clone the environment setup repository**
    ```bash
-   cp .bash_aliases.sample ~/.bash_aliases
+   git clone https://github.com/theguywithahat0/dbt-env-setup.git
+   cd dbt-env-setup
    ```
 
-2. Source it:
+2. **Create a project-specific environment**
+   ```bash
+   # Create a dedicated environment for your project
+   python3 -m venv envs/my_dbt_project
+   ```
+
+3. **Create a project-specific environment file**
+   ```bash
+   # Create and edit the my_dbt_project.env file
+   nano env_vars/my_dbt_project.env
+   ```
+   
+   Add these contents:
+   ```
+   DBT_ENV=my_dbt_project
+   DBT_PROJECT_PATH=/home/username/projects/my_dbt_project
+   WAREHOUSE=my_warehouse
+   ```
+
+4. **Set up shell aliases (optional)**
+   ```bash
+   # Copy the sample file to your home directory
+   cp .bash_aliases.sample ~/.bash_aliases
+   
+   # Edit the file to update the ENV_SETUP_DIR path
+   nano ~/.bash_aliases
+   ```
+   
+   Update this line in the file:
+   ```bash
+   ENV_SETUP_DIR="/home/username/dbt-env-setup"  # Update with your actual path
+   ```
+   
+   Then source the file:
    ```bash
    source ~/.bash_aliases
    ```
 
-3. Use the included helpers:
+5. **Configure your dbt profiles**
    ```bash
-   # Load development environment (runs dbt_setup.sh)
-   project_setup dev
+   # Create the .dbt directory in the env-setup repository
+   mkdir -p $ENV_SETUP_DIR/.dbt
    
-   # Activate default environment
+   # Create or edit the profiles.yml file
+   nano $ENV_SETUP_DIR/.dbt/profiles.yml
+   ```
+   
+   Add your connection details to the profiles.yml file:
+   ```yaml
+   my_dbt_project:
+     target: dev
+     outputs:
+       dev:
+         type: snowflake
+         account: youraccount
+         user: your_dev_user
+         password: your_password
+         role: DEV_ROLE
+         database: DEV_DB
+         warehouse: DEV_WH
+         schema: DEV_SCHEMA
+         threads: 4
+       prod:
+         type: snowflake
+         account: youraccount
+         user: your_prod_user
+         password: your_password
+         role: PROD_ROLE
+         database: PROD_DB
+         warehouse: PROD_WH
+         schema: PROD_SCHEMA
+         threads: 4
+   ```
+   
+   > **Note:** The setup will use this centralized profiles location instead of the default ~/.dbt/profiles.yml
+
+6. **Clone your actual DBT project**
+   ```bash
+   # Create the project directory
+   mkdir -p /home/username/projects/my_dbt_project
+   
+   # Clone your repo (example - substitute with your actual project)
+   git clone https://github.com/your-username/my_dbt_project.git /home/username/projects/my_dbt_project
+   ```
+
+6. **Activate your project environment**
+   ```bash
+   # If you set up the aliases:
+   project_setup my_dbt_project
+   
+   # Or without aliases (must be run from any directory):
+   source /path/to/dbt-env-setup/scripts/dbt_setup.sh my_dbt_project
+   ```
+
+7. **Install DBT and dependencies**
+   ```bash
+   # If in the repository directory:
+   bash install_dbt.sh
+   
+   # Or if you set up aliases (can be run from any directory):
+   bash $ENV_SETUP_DIR/install_dbt.sh
+   
+   # Or without aliases (must specify full path):
+   bash /path/to/dbt-env-setup/install_dbt.sh
+   ```
+
+8. **Verify your setup**
+   ```bash
+   # Check that DBT is installed
+   dbt --version
+   
+   # You should already be in your project directory
+   # due to the DBT_PROJECT_PATH setting
+   dbt debug
+   ```
+
+9. **Use the default environment when needed**
+   ```bash
+   # If you set up aliases:
    env_default
    
-   # Manually load environment variables
-   load_env dev
-   
-   # Create a new environment
-   create_env staging 3.9  # Optional Python version specification
+   # Without aliases:
+   source /path/to/dbt-env-setup/envs/env/bin/activate
    ```
 
 ## 🛠️ Customization
@@ -198,6 +275,10 @@ Solution: Use `source scripts/dbt_setup.sh dev` instead of `./scripts/dbt_setup.
 ## 📝 Contributing
 
 Feel free to customize this repository for your specific needs. If you make improvements, consider contributing them back via pull request!
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 🔒 Security Note
 
