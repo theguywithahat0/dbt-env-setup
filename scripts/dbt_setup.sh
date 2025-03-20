@@ -46,14 +46,16 @@ else
     echo "👉 Using default project path: $DBT_PROJECT_DIR"
 fi
 
+# Set DBT_PROFILES_DIR to point to the centralized profiles
+export DBT_PROFILES_DIR="$BASE_DIR/.dbt"
+echo "📂 Using profiles directory: $DBT_PROFILES_DIR"
+
 # Check if virtual environment exists
 if [ ! -d "$VENV_DIR" ]; then
     echo "Error: Virtual environment '$VENV_DIR' not found!"
     echo "Please create it using: python3 -m venv $VENV_DIR"
     return 1
 fi
-
-# Environment variables already loaded above
 
 # Activate the virtual environment
 source "$VENV_DIR/bin/activate"
