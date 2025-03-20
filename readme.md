@@ -18,9 +18,10 @@ This repository provides a lightweight solution for data engineers working with 
 git clone https://github.com/theguywithahat0/dbt-env-setup.git
 cd dbt-env-setup
 
-# Create your virtual environments
+# Create your environments
 python3 -m venv envs/dev
 python3 -m venv envs/prod
+python3 -m venv envs/env  # Create the fallback environment
 
 # Set up development environment
 source scripts/dbt_setup.sh dev
@@ -59,16 +60,28 @@ Using the `DBT_PROJECT_PATH` variable in each environment file, you can:
 - Use completely separate project directories for different contexts
 - Organize your work by project and environment
 
-### 5. Default Fallback Environment
-A default environment (`env_default` alias) is provided as a fallback:
-- Quick access to a general-purpose environment
-- Useful for tests or one-off operations
-- No project-specific configuration needed
+### 5. Default Fallback Environment (`env_dbt`)
+A simple default environment is provided as a quick fallback:
+- Created with `python3 -m venv envs/env` in the repository
+- Activated directly with the `env_dbt` alias
+- No configuration or setup script needed
+- Useful for quick tests, one-off operations, or emergency access
+- Works independently of project-specific environments
+
+To set up and use this fallback environment:
+```bash
+# Create it (only needed once)
+cd dbt-env-setup
+python3 -m venv envs/env
+
+# Activate it any time (requires bash aliases to be set up)
+env_dbt
+```
 
 ### 6. Shell Aliases (Optional)
 The `.bash_aliases.sample` file provides convenient shortcuts:
 - `project_setup <env>` - Quick environment activation
-- `env_default` - Activate the default fallback environment
+- `env_dbt` - Activate the default fallback environment
 - `load_env <env>` - Load variables without switching environments
 - `create_env <env> [python_version]` - Create new environments
 
@@ -194,15 +207,6 @@ This walkthrough will guide you through setting up a complete environment for a 
    # You should already be in your project directory
    # due to the DBT_PROJECT_PATH setting
    dbt debug
-   ```
-
-9. **Use the default environment when needed**
-   ```bash
-   # If you set up aliases:
-   env_default
-   
-   # Without aliases:
-   source /path/to/dbt-env-setup/envs/env/bin/activate
    ```
 
 ## 🛠️ Customization
