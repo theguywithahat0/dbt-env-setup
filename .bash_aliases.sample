@@ -9,7 +9,7 @@ ENV_SETUP_DIR="$HOME/dbt-env-setup"  # Change this to match your installation pa
 
 # Alias to run the project setup script (which is dbt_setup.sh)
 # Usage: project_setup dev
-project_setup() {
+function project_setup {
     local script_path="$ENV_SETUP_DIR/scripts/dbt_setup.sh"
     
     if [ -z "$1" ]; then
@@ -27,7 +27,7 @@ project_setup() {
 }
 
 # Alias to activate the default virtual environment (fallback environment)
-env_dbt() {
+function env_dbt {
     local env_path="$ENV_SETUP_DIR/envs/env/bin/activate"
     
     if [ ! -f "$env_path" ]; then
@@ -47,7 +47,7 @@ export PROFILES_DIR="$ENV_SETUP_DIR/.profiles"
 # Function to load environment variables for different project environments
 # Usage: load_env <environment_name>
 # Example: load_env dev
-load_env() {
+function load_env {
     local env_file="$ENV_SETUP_DIR/env_vars/${1}.env"
     
     if [ -z "$1" ]; then
@@ -70,7 +70,7 @@ load_env() {
 # Function to create a new environment if it doesn't exist
 # Usage: create_env <environment_name> [python_version]
 # Example: create_env my_project 3.9
-create_env() {
+function create_env {
     local env_name="$1"
     local python_cmd="python3"
     
