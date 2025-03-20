@@ -46,9 +46,14 @@ else
     echo "👉 Using default project path: $DBT_PROJECT_DIR"
 fi
 
-# Set DBT_PROFILES_DIR to point to the centralized profiles
-export DBT_PROFILES_DIR="$BASE_DIR/.dbt"
-echo "📂 Using profiles directory: $DBT_PROFILES_DIR"
+# Set DBT_PROFILES_DIR to point to the centralized profiles if the directory exists
+if [ -d "$BASE_DIR/.dbt" ]; then
+    export DBT_PROFILES_DIR="$BASE_DIR/.dbt"
+    echo "📂 Using custom profiles directory: $DBT_PROFILES_DIR"
+    echo "⚠️  IMPORTANT: This overrides the default ~/.dbt/profiles.yml location"
+else
+    echo "📂 Using default profiles directory: ~/.dbt"
+fi
 
 # Check if virtual environment exists
 if [ ! -d "$VENV_DIR" ]; then
